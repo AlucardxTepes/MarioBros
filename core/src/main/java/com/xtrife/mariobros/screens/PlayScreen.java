@@ -64,7 +64,7 @@ public class PlayScreen implements Screen {
     renderer = new OrthogonalTiledMapRenderer(map, 1 / Main.PPM);
     gamecam.position.set(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 0);
 
-    world = new World(new Vector2(0, -10), true); // physics gravity
+    world = new World(new Vector2(0, -9), true); // physics gravity
     b2dr = new Box2DDebugRenderer();
 
     new B2WorldCreator(world, map);
@@ -138,7 +138,10 @@ public class PlayScreen implements Screen {
     // how often to update box2d physics
     world.step(1/60f, 6, 2);
 
-    gamecam.position.x = player.b2Body.getPosition().x; // camera tracks only x movement
+    // cam follows mario unless reached start of stage
+    gamecam.position.x = Math.max((float) Main.V_WIDTH / 2 / Main.PPM, player.b2Body.getPosition().x);
+
+
 
     player.update(delta);
 
@@ -152,11 +155,11 @@ public class PlayScreen implements Screen {
       player.b2Body.applyLinearImpulse(new Vector2(0, 4f), player.b2Body.getWorldCenter(), true);
     }
     if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) // hold down key
-      && player.b2Body.getLinearVelocity().x <= 2) { // prevent going too fast
+      && player.b2Body.getLinearVelocity().x <= 0.5) { // prevent going too fast
       player.b2Body.applyLinearImpulse(new Vector2(0.1f, 0), player.b2Body.getWorldCenter(), true);
     }
     if (Gdx.input.isKeyPressed(Input.Keys.LEFT) // hold down key
-      && player.b2Body.getLinearVelocity().x >= -2) { // prevent going too fast
+      && player.b2Body.getLinearVelocity().x >= -0.5) { // prevent going too fast
       player.b2Body.applyLinearImpulse(new Vector2(-0.1f, 0), player.b2Body.getWorldCenter(), true);
     }
 
