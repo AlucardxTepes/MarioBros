@@ -61,14 +61,18 @@ public class Mario extends Sprite {
     }
 
     private void defineMario() {
+        // body
         BodyDef bodyDef = new BodyDef();
         bodyDef.position.set(32 / Main.PPM, 32 / Main.PPM);
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         b2Body = world.createBody(bodyDef);
 
+        // body fixture
         FixtureDef fixtureDef = new FixtureDef();
         CircleShape shape = new CircleShape();
         shape.setRadius(6 / Main.PPM);
+        fixtureDef.filter.categoryBits = Main.MARIO_BIT;
+        fixtureDef.filter.maskBits = Main.DEFAULT_BIT | Main.BRICK_BIT | Main.COIN_BIT; // what can mario collide with
 
         fixtureDef.shape = shape;
         b2Body.createFixture(fixtureDef);

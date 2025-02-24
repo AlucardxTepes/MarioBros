@@ -1,6 +1,5 @@
 package com.xtrife.mariobros.tools;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -20,7 +19,7 @@ public class WorldContactListener implements ContactListener {
         if (fixA.getUserData() == "head" || fixB.getUserData() == "head") {
             // assign head and object
             Fixture head = fixA.getUserData().equals("head") ? fixA : fixB;
-            Fixture object = head == fixA ? fixA : fixB;
+            Fixture object = head == fixA ? fixB : fixA;
 
             // check if object is an interactive tile object
             if (object.getUserData() != null && InteractiveTileObject.class.isAssignableFrom(object.getUserData().getClass())) {
