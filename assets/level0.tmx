@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="240" height="13" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="17">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="240" height="13" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="23">
  <tileset firstgid="1" source="../../tileset_gutter.tsx"/>
  <tileset firstgid="925" source="tileset_gutter.tsx"/>
  <layer id="1" name="background" width="240" height="13">
@@ -9,17 +9,21 @@
  </layer>
  <layer id="2" name="graphics" width="240" height="13">
   <data encoding="base64" compression="zlib">
-   eJzt1zEKgzAYhmHt4K6dPIYV7dZDtHr/q/gPBTMILopNeR54CWTK8g0pCiB3c7UG5CXdbxc9ot6WITvv2O0nmuwX/lp79QMAAADgIFt/3Nv3Pj0BgGM15dUvAPYMsdMx6RnV0Su62zD8lPLEgHMtQ2QF4g==
+   eJzt1zsKwkAUhtEbCfZq5TJU1C6L8LFEXYpuy1sITiFYOBJGzoGPwFS3+YtEAK07T18BbSn3u8rW2caWoTmH3O0xO9kv/LXl2AcAAABAJe/+cSfP9/ILANQ178a+APhkmzvdFe2zWTZkiy82fOkjrn29O4GI7oeVbrndu/1CVQ/tUgjK
   </data>
  </layer>
  <objectgroup id="3" name="ground">
   <object id="1" x="0" y="192" width="368" height="16"/>
+  <object id="19" x="104.333" y="-59.3333"/>
  </objectgroup>
- <objectgroup id="4" name="pipes"/>
+ <objectgroup id="4" name="pipes">
+  <object id="22" x="416" y="176" width="32" height="32"/>
+ </objectgroup>
  <objectgroup id="5" name="coins">
   <object id="14" x="272" y="128" width="16" height="16"/>
   <object id="15" x="256" y="64" width="16" height="16"/>
   <object id="16" x="144" y="128" width="16" height="16"/>
+  <object id="18" x="240" y="128" width="16" height="16"/>
  </objectgroup>
  <objectgroup id="6" name="bricks">
   <object id="11" x="224" y="128" width="16" height="16"/>
