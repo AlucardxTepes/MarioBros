@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -32,6 +33,7 @@ import com.xtrife.mariobros.tools.B2WorldCreator;
 public class PlayScreen implements Screen {
 
   private final Main game;
+  private TextureAtlas atlas;
   private OrthographicCamera gamecam;
   private Viewport viewport;
   private Hud hud;
@@ -46,6 +48,7 @@ public class PlayScreen implements Screen {
   private Mario player;
 
   public PlayScreen(Main game) {
+    atlas = new TextureAtlas("Mario_and_Enemies.atlas");
     this.game = game;
     // create camera that will eventually follow Mario
     gamecam = new OrthographicCamera();
@@ -62,11 +65,11 @@ public class PlayScreen implements Screen {
     gamecam.position.set(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 0);
 
     world = new World(new Vector2(0, -10), true); // physics gravity
-    player = new Mario(world);
     b2dr = new Box2DDebugRenderer();
 
     new B2WorldCreator(world, map);
 
+    player = new Mario(world, this);
   }
 
   @Override
@@ -88,6 +91,12 @@ public class PlayScreen implements Screen {
 
     // render Box2DDebugLines
     b2dr.render(world, gamecam.combined);
+
+    // setup camera
+    game.batch.setProjectionMatrix(gamecam.combined);
+    game.batch.begin();
+    player.draw(game.batch);
+    game.batch.end();
 
     // draw the hud
     game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
@@ -131,6 +140,8 @@ public class PlayScreen implements Screen {
 
     gamecam.position.x = player.b2Body.getPosition().x; // camera tracks only x movement
 
+    player.update(delta);
+
     gamecam.update(); // always update cam
     renderer.setView(gamecam); // render only what cam can see
   }
@@ -149,5 +160,9 @@ public class PlayScreen implements Screen {
       player.b2Body.applyLinearImpulse(new Vector2(-0.1f, 0), player.b2Body.getWorldCenter(), true);
     }
 
+  }
+
+  public TextureAtlas getAtlas() {
+      return atlas;
   }
 }
