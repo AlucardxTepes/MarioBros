@@ -5,6 +5,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.World;
 import com.xtrife.mariobros.Main;
+import com.xtrife.mariobros.scenes.Hud;
 
 /**
  * Created by 9S on 2/24/2025 - 3:46 AM.
@@ -22,5 +23,6 @@ public class Brick extends InteractiveTileObject {
         Gdx.app.log("Brick", "onHeadHit");
         setCategoryFilter(Main.DESTROYED_BIT);
         getCell().setTile(null);
+        Hud.addScore(200);
     }
 }

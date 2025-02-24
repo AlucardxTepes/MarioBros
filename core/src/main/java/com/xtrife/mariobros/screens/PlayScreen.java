@@ -147,6 +147,7 @@ public class PlayScreen implements Screen {
 
 
     player.update(delta);
+    hud.update(delta);
 
     gamecam.update(); // always update cam
     renderer.setView(gamecam); // render only what cam can see
