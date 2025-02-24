@@ -1,6 +1,7 @@
 package com.xtrife.mariobros.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -22,6 +23,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.xtrife.mariobros.Main;
 import com.xtrife.mariobros.scenes.Hud;
+import com.xtrife.mariobros.sprites.Mario;
 
 /**
  * Created by 9S on 2/24/2025.
@@ -40,23 +42,26 @@ public class PlayScreen implements Screen {
   private World world;
   private Box2DDebugRenderer b2dr;
 
+  private Mario player;
+
   public PlayScreen(Main game) {
     this.game = game;
     // create camera that will eventually follow Mario
     gamecam = new OrthographicCamera();
 
     // maintain aspect ratio
-    viewport = new FitViewport(Main.V_WIDTH, Main.V_HEIGHT, gamecam);
+    viewport = new FitViewport(Main.V_WIDTH / Main.PPM, Main.V_HEIGHT / Main.PPM, gamecam);
     // create HUD
     hud = new Hud(game.batch);
 
     // TiledMap level
     mapLoader = new TmxMapLoader();
     map = mapLoader.load("level0.tmx");
-    renderer = new OrthogonalTiledMapRenderer(map);
+    renderer = new OrthogonalTiledMapRenderer(map, 1 / Main.PPM);
     gamecam.position.set(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 0);
 
-    world = new World(new Vector2(0, 0), true);
+    world = new World(new Vector2(0, -10), true); // physics gravity
+    player = new Mario(world);
     b2dr = new Box2DDebugRenderer();
 
     BodyDef bodyDef = new BodyDef();
@@ -69,11 +74,11 @@ public class PlayScreen implements Screen {
       Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
 
       bodyDef.type = BodyDef.BodyType.StaticBody;
-      bodyDef.position.set(rectangle.getX() + rectangle.getWidth() / 2, rectangle.getY() + rectangle.getHeight() / 2);
+      bodyDef.position.set((rectangle.getX() + rectangle.getWidth() / 2) / Main.PPM, (rectangle.getY() + rectangle.getHeight() / 2) / Main.PPM);
 
       body = world.createBody(bodyDef);
 
-      shape.setAsBox(rectangle.getWidth() / 2, rectangle.getHeight() / 2);
+      shape.setAsBox(rectangle.getWidth() / 2 / Main.PPM, rectangle.getHeight() / 2 / Main.PPM);
       fixtureDef.shape = shape;
       body.createFixture(fixtureDef);
     }
@@ -82,11 +87,11 @@ public class PlayScreen implements Screen {
       Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
 
       bodyDef.type = BodyDef.BodyType.StaticBody;
-      bodyDef.position.set(rectangle.getX() + rectangle.getWidth() / 2, rectangle.getY() + rectangle.getHeight() / 2);
+      bodyDef.position.set((rectangle.getX() + rectangle.getWidth() / 2) / Main.PPM, (rectangle.getY() + rectangle.getHeight() / 2) / Main.PPM);
 
       body = world.createBody(bodyDef);
 
-      shape.setAsBox(rectangle.getWidth() / 2, rectangle.getHeight() / 2);
+      shape.setAsBox(rectangle.getWidth() / 2 / Main.PPM, rectangle.getHeight() / 2 / Main.PPM);
       fixtureDef.shape = shape;
       body.createFixture(fixtureDef);
     }
@@ -95,11 +100,11 @@ public class PlayScreen implements Screen {
       Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
 
       bodyDef.type = BodyDef.BodyType.StaticBody;
-      bodyDef.position.set(rectangle.getX() + rectangle.getWidth() / 2, rectangle.getY() + rectangle.getHeight() / 2);
+      bodyDef.position.set((rectangle.getX() + rectangle.getWidth() / 2) / Main.PPM, (rectangle.getY() + rectangle.getHeight() / 2) / Main.PPM);
 
       body = world.createBody(bodyDef);
 
-      shape.setAsBox(rectangle.getWidth() / 2, rectangle.getHeight() / 2);
+      shape.setAsBox(rectangle.getWidth() / 2 / Main.PPM, rectangle.getHeight() / 2 / Main.PPM);
       fixtureDef.shape = shape;
       body.createFixture(fixtureDef);
     }
@@ -108,14 +113,15 @@ public class PlayScreen implements Screen {
       Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
 
       bodyDef.type = BodyDef.BodyType.StaticBody;
-      bodyDef.position.set(rectangle.getX() + rectangle.getWidth() / 2, rectangle.getY() + rectangle.getHeight() / 2);
+      bodyDef.position.set((rectangle.getX() + rectangle.getWidth() / 2) / Main.PPM, (rectangle.getY() + rectangle.getHeight() / 2) / Main.PPM);
 
       body = world.createBody(bodyDef);
 
-      shape.setAsBox(rectangle.getWidth() / 2, rectangle.getHeight() / 2);
+      shape.setAsBox(rectangle.getWidth() / 2 / Main.PPM, rectangle.getHeight() / 2 / Main.PPM);
       fixtureDef.shape = shape;
       body.createFixture(fixtureDef);
     }
+
   }
 
   @Override
@@ -170,13 +176,28 @@ public class PlayScreen implements Screen {
 
   public void update(float delta) {
     handleInput(delta);
+
+    // how often to update box2d physics
+    world.step(1/60f, 6, 2);
+
+    gamecam.position.x = player.b2Body.getPosition().x; // camera tracks only x movement
+
     gamecam.update(); // always update cam
     renderer.setView(gamecam); // render only what cam can see
   }
 
   private void handleInput(float delta) {
-    if (Gdx.input.isTouched()) {
-      gamecam.position.x += 100 * delta;
+    if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+      // apply impulse to center of body to avoid particular torque
+      player.b2Body.applyLinearImpulse(new Vector2(0, 4f), player.b2Body.getWorldCenter(), true);
+    }
+    if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) // hold down key
+      && player.b2Body.getLinearVelocity().x <= 2) { // prevent going too fast
+      player.b2Body.applyLinearImpulse(new Vector2(0.1f, 0), player.b2Body.getWorldCenter(), true);
+    }
+    if (Gdx.input.isKeyPressed(Input.Keys.LEFT) // hold down key
+      && player.b2Body.getLinearVelocity().x >= -2) { // prevent going too fast
+      player.b2Body.applyLinearImpulse(new Vector2(-0.1f, 0), player.b2Body.getWorldCenter(), true);
     }
 
   }
