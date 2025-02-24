@@ -5,6 +5,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -14,6 +15,7 @@ import com.xtrife.mariobros.Main;
  * Created by 9S on 2/24/2025 - 3:46 AM.
  */
 public abstract class InteractiveTileObject {
+    protected final Fixture fixture;
     protected World world;
     protected TiledMap map;
     protected TiledMapTile tile;
@@ -37,5 +39,8 @@ public abstract class InteractiveTileObject {
         shape.setAsBox(bounds.getWidth() / 2 / Main.PPM, bounds.getHeight() / 2 / Main.PPM);
         fixtureDef.shape = shape;
         body.createFixture(fixtureDef);
+        fixture = body.createFixture(fixtureDef);
     }
+
+    public abstract void onHeadHit();
 }

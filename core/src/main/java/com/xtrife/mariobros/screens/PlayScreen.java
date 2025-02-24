@@ -26,6 +26,7 @@ import com.xtrife.mariobros.Main;
 import com.xtrife.mariobros.scenes.Hud;
 import com.xtrife.mariobros.sprites.Mario;
 import com.xtrife.mariobros.tools.B2WorldCreator;
+import com.xtrife.mariobros.tools.WorldContactListener;
 
 /**
  * Created by 9S on 2/24/2025.
@@ -70,6 +71,8 @@ public class PlayScreen implements Screen {
     new B2WorldCreator(world, map);
 
     player = new Mario(world, this);
+
+    world.setContactListener(new WorldContactListener());
   }
 
   @Override
