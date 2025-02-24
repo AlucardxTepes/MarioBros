@@ -24,6 +24,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.xtrife.mariobros.Main;
 import com.xtrife.mariobros.scenes.Hud;
 import com.xtrife.mariobros.sprites.Mario;
+import com.xtrife.mariobros.tools.B2WorldCreator;
 
 /**
  * Created by 9S on 2/24/2025.
@@ -64,63 +65,7 @@ public class PlayScreen implements Screen {
     player = new Mario(world);
     b2dr = new Box2DDebugRenderer();
 
-    BodyDef bodyDef = new BodyDef();
-    PolygonShape shape = new PolygonShape();
-    FixtureDef fixtureDef = new FixtureDef();
-    Body body;
-
-    // create ground bodies / fixtures
-    for (MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)) {
-      Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
-
-      bodyDef.type = BodyDef.BodyType.StaticBody;
-      bodyDef.position.set((rectangle.getX() + rectangle.getWidth() / 2) / Main.PPM, (rectangle.getY() + rectangle.getHeight() / 2) / Main.PPM);
-
-      body = world.createBody(bodyDef);
-
-      shape.setAsBox(rectangle.getWidth() / 2 / Main.PPM, rectangle.getHeight() / 2 / Main.PPM);
-      fixtureDef.shape = shape;
-      body.createFixture(fixtureDef);
-    }
-    // create pipes fixtures
-    for (MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)) {
-      Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
-
-      bodyDef.type = BodyDef.BodyType.StaticBody;
-      bodyDef.position.set((rectangle.getX() + rectangle.getWidth() / 2) / Main.PPM, (rectangle.getY() + rectangle.getHeight() / 2) / Main.PPM);
-
-      body = world.createBody(bodyDef);
-
-      shape.setAsBox(rectangle.getWidth() / 2 / Main.PPM, rectangle.getHeight() / 2 / Main.PPM);
-      fixtureDef.shape = shape;
-      body.createFixture(fixtureDef);
-    }
-    // create coins fixtures
-    for (MapObject object : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)) {
-      Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
-
-      bodyDef.type = BodyDef.BodyType.StaticBody;
-      bodyDef.position.set((rectangle.getX() + rectangle.getWidth() / 2) / Main.PPM, (rectangle.getY() + rectangle.getHeight() / 2) / Main.PPM);
-
-      body = world.createBody(bodyDef);
-
-      shape.setAsBox(rectangle.getWidth() / 2 / Main.PPM, rectangle.getHeight() / 2 / Main.PPM);
-      fixtureDef.shape = shape;
-      body.createFixture(fixtureDef);
-    }
-    // create bricks fixtures
-    for (MapObject object : map.getLayers().get(5).getObjects().getByType(RectangleMapObject.class)) {
-      Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
-
-      bodyDef.type = BodyDef.BodyType.StaticBody;
-      bodyDef.position.set((rectangle.getX() + rectangle.getWidth() / 2) / Main.PPM, (rectangle.getY() + rectangle.getHeight() / 2) / Main.PPM);
-
-      body = world.createBody(bodyDef);
-
-      shape.setAsBox(rectangle.getWidth() / 2 / Main.PPM, rectangle.getHeight() / 2 / Main.PPM);
-      fixtureDef.shape = shape;
-      body.createFixture(fixtureDef);
-    }
+    new B2WorldCreator(world, map);
 
   }
 
@@ -171,7 +116,11 @@ public class PlayScreen implements Screen {
 
   @Override
   public void dispose() {
-
+    map.dispose();
+    renderer.dispose();
+    world.dispose();
+    b2dr.dispose();
+    hud.dispose();
   }
 
   public void update(float delta) {
