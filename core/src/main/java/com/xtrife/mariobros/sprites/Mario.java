@@ -29,9 +29,9 @@ public class Mario extends Sprite {
     private float stateTimer;
     private boolean runningRight;
 
-    public Mario(World world, PlayScreen screen) {
+    public Mario(PlayScreen screen) {
         super(screen.getAtlas().findRegion("little_mario"));
-        this.world = world;
+        this.world = screen.getWorld();
         currentState = State.STANDING;
         previousState = State.STANDING;
         stateTimer = 0f;
@@ -72,7 +72,8 @@ public class Mario extends Sprite {
         CircleShape shape = new CircleShape();
         shape.setRadius(6 / Main.PPM);
         fixtureDef.filter.categoryBits = Main.MARIO_BIT;
-        fixtureDef.filter.maskBits = Main.DEFAULT_BIT | Main.BRICK_BIT | Main.COIN_BIT; // what can mario collide with
+        fixtureDef.filter.maskBits = Main.GROUND_BIT | Main.BRICK_BIT |
+            Main.COIN_BIT | Main.ENEMY_BIT | Main.OBJECT_BIT; // what can mario collide with
 
         fixtureDef.shape = shape;
         b2Body.createFixture(fixtureDef);

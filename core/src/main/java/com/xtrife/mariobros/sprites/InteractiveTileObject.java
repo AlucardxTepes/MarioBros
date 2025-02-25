@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.xtrife.mariobros.Main;
+import com.xtrife.mariobros.screens.PlayScreen;
 
 /**
  * Created by 9S on 2/24/2025 - 3:46 AM.
@@ -23,9 +24,9 @@ public abstract class InteractiveTileObject {
     protected Rectangle bounds;
     protected Body body;
 
-    public InteractiveTileObject(World world, TiledMap map, Rectangle bounds) {
-        this.world = world;
-        this.map = map;
+    public InteractiveTileObject(PlayScreen screen, Rectangle bounds) {
+        this.world = screen.getWorld();
+        this.map = screen.getMap();
         this.bounds = bounds;
 
         BodyDef bodyDef = new BodyDef();
