@@ -1,6 +1,8 @@
 package com.xtrife.mariobros.sprites;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -52,7 +54,7 @@ public class Goomba extends Enemy {
             Main.BRICK_BIT | Main.COIN_BIT | Main.ENEMY_BIT | Main.OBJECT_BIT | Main.MARIO_BIT;
 
         fixtureDef.shape = shape;
-        b2Body.createFixture(fixtureDef);
+        b2Body.createFixture(fixtureDef).setUserData(this); // setuserdata so that we can access it
 
         // Create head here:
         PolygonShape head = new PolygonShape();
@@ -81,10 +83,20 @@ public class Goomba extends Enemy {
             world.destroyBody(b2Body);
             isDestroyed = true;
             setRegion(new TextureRegion(screen.getAtlas().findRegion("goomba"), 32, 0, 16, 16 ));
+            stateTime = 0;
+            Main.manager.get("audio/sounds/stomp.wav", Sound.class).play();
         } else if (!isDestroyed) {
+            b2Body.setLinearVelocity(velocity);
             setPosition(b2Body.getPosition().x - getWidth() / 2, b2Body.getPosition().y - getHeight() / 2);
             setRegion(walkAnimation.getKeyFrame(stateTime, true));
         }
 
+    }
+
+    @Override
+    public void draw(Batch batch) {
+        if (!isDestroyed || stateTime < 1) {
+            super.draw(batch); // Textures are drawn only if NOT destroyed and stateTime < 1
+        }
     }
 }
