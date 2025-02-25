@@ -21,6 +21,7 @@ public class Main extends Game {
     public static final short DESTROYED_BIT = 16;
     public static final short OBJECT_BIT = 32;
     public static final short ENEMY_BIT = 64;
+    public static final short ENEMY_HEAD_BIT = 128;
 
 
 
@@ -30,7 +31,7 @@ public class Main extends Game {
     public void create() {
         batch = new SpriteBatch();
         manager = new AssetManager();
-        manager.load("audio/music/mario_music.ogg", Music.class);
+//        manager.load("audio/music/mario_music.ogg", Music.class);
         manager.load("audio/sounds/coin.wav", Sound.class);
         manager.load("audio/sounds/bump.wav", Sound.class);
         manager.load("audio/sounds/breakblock.wav", Sound.class);

@@ -73,7 +73,7 @@ public class Mario extends Sprite {
         shape.setRadius(6 / Main.PPM);
         fixtureDef.filter.categoryBits = Main.MARIO_BIT;
         fixtureDef.filter.maskBits = Main.GROUND_BIT | Main.BRICK_BIT |
-            Main.COIN_BIT | Main.ENEMY_BIT | Main.OBJECT_BIT; // what can mario collide with
+            Main.COIN_BIT | Main.ENEMY_BIT | Main.OBJECT_BIT | Main.ENEMY_HEAD_BIT; // what can mario collide with
 
         fixtureDef.shape = shape;
         b2Body.createFixture(fixtureDef);

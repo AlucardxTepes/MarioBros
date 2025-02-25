@@ -80,9 +80,9 @@ public class PlayScreen implements Screen {
     world.setContactListener(new WorldContactListener());
 
     // load audio
-      music = Main.manager.get("audio/music/mario_music.ogg", Music.class);
-      music.setLooping(true);
-      music.play();
+//      music = Main.manager.get("audio/music/mario_music.ogg", Music.class);
+//      music.setLooping(true);
+//      music.play();
 
       goomba = new Goomba(this, .32f, .32f);
   }

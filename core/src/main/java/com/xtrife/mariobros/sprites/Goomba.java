@@ -2,9 +2,11 @@ package com.xtrife.mariobros.sprites;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.xtrife.mariobros.Main;
 import com.xtrife.mariobros.screens.PlayScreen;
@@ -17,6 +19,8 @@ public class Goomba extends Enemy {
     private float stateTime;
     private Animation<TextureRegion> walkAnimation;
     private Array<TextureRegion> frames;
+    private boolean setToDestroy;
+    private boolean isDestroyed;
 
     public Goomba(PlayScreen screen, float x, float y) {
         super(screen, x, y);
@@ -27,13 +31,15 @@ public class Goomba extends Enemy {
         walkAnimation = new Animation(0.4f, frames);
         stateTime = 0;
         setBounds(getX(),getY(),16 / Main.PPM,16 / Main.PPM);
+        setToDestroy = false;
+        isDestroyed = false;
     }
 
     @Override
     protected void defineEnemy() {
         // body
         BodyDef bodyDef = new BodyDef();
-        bodyDef.position.set(32 / Main.PPM, 32 / Main.PPM);
+        bodyDef.position.set(getX()+1, getY());
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         b2Body = world.createBody(bodyDef);
 
@@ -47,11 +53,38 @@ public class Goomba extends Enemy {
 
         fixtureDef.shape = shape;
         b2Body.createFixture(fixtureDef);
+
+        // Create head here:
+        PolygonShape head = new PolygonShape();
+        Vector2[] vertices = new Vector2[4];
+        vertices[0] = new Vector2(-5, 8).scl(1/Main.PPM); // radius is 6 so this will go 2 above
+        vertices[1] = new Vector2(5, 8).scl(1/Main.PPM);
+        vertices[2] = new Vector2(-3, 3).scl(1/Main.PPM);
+        vertices[3] = new Vector2(3, 3).scl(1/Main.PPM);
+        head.set(vertices);
+
+        fixtureDef.shape = head;
+        fixtureDef.restitution = 0.5f; // 1 means Mario would bounce 10 pixels above
+        fixtureDef.filter.categoryBits = Main.ENEMY_HEAD_BIT;
+        b2Body.createFixture(fixtureDef).setUserData(this); // setuserdata so that we can access it
+
+    }
+
+    @Override
+    public void hitOnHead() {
+        setToDestroy = true;
     }
 
     public void update(float delta) {
         stateTime += delta;
-        setPosition(b2Body.getPosition().x - getWidth() / 2, b2Body.getPosition().y - getHeight() / 2);
-        setRegion(walkAnimation.getKeyFrame(stateTime, true));
+        if (setToDestroy && !isDestroyed) {
+            world.destroyBody(b2Body);
+            isDestroyed = true;
+            setRegion(new TextureRegion(screen.getAtlas().findRegion("goomba"), 32, 0, 16, 16 ));
+        } else if (!isDestroyed) {
+            setPosition(b2Body.getPosition().x - getWidth() / 2, b2Body.getPosition().y - getHeight() / 2);
+            setRegion(walkAnimation.getKeyFrame(stateTime, true));
+        }
+
     }
 }

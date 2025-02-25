@@ -5,6 +5,8 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.xtrife.mariobros.Main;
+import com.xtrife.mariobros.sprites.Enemy;
 import com.xtrife.mariobros.sprites.InteractiveTileObject;
 
 /**
@@ -16,6 +18,8 @@ public class WorldContactListener implements ContactListener {
         Fixture fixA = contact.getFixtureA();
         Fixture fixB = contact.getFixtureB();
 
+        int cDef = fixA.getFilterData().categoryBits | fixB.getFilterData().categoryBits;
+
         if (fixA.getUserData() == "head" || fixB.getUserData() == "head") {
             // assign head and object
             Fixture head = fixA.getUserData().equals("head") ? fixA : fixB;
@@ -25,6 +29,16 @@ public class WorldContactListener implements ContactListener {
             if (object.getUserData() != null && InteractiveTileObject.class.isAssignableFrom(object.getUserData().getClass())) {
                 ((InteractiveTileObject)object.getUserData()).onHeadHit();
             }
+        }
+
+        switch (cDef) {
+            case Main.ENEMY_HEAD_BIT | Main.MARIO_BIT:
+                // collision between enemy head and Mario
+                if (fixA.getFilterData().categoryBits == Main.ENEMY_HEAD_BIT) {
+                    ((Enemy) fixA.getUserData()).hitOnHead();
+                } else if (fixB.getFilterData().categoryBits == Main.ENEMY_HEAD_BIT) {
+                    ((Enemy) fixB.getUserData()).hitOnHead();
+                }
         }
     }
 
