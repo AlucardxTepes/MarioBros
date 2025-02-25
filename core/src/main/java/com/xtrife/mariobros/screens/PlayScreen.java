@@ -25,6 +25,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.xtrife.mariobros.Main;
 import com.xtrife.mariobros.scenes.Hud;
+import com.xtrife.mariobros.sprites.Enemy;
 import com.xtrife.mariobros.sprites.Goomba;
 import com.xtrife.mariobros.sprites.Mario;
 import com.xtrife.mariobros.tools.B2WorldCreator;
@@ -41,17 +42,20 @@ public class PlayScreen implements Screen {
   private Viewport viewport;
   private Hud hud;
 
+  // Basic playscreen vars
   private TmxMapLoader mapLoader;
   private TiledMap map;
   private OrthogonalTiledMapRenderer renderer;
 
+  // Box2d vars
   private World world;
   private Box2DDebugRenderer b2dr;
+  private B2WorldCreator creator;
 
   private Music music;
 
+  // Sprites
   private Mario player;
-  private Goomba goomba;
 
   public PlayScreen(Main game) {
     atlas = new TextureAtlas("Mario_and_Enemies.atlas");
@@ -73,7 +77,7 @@ public class PlayScreen implements Screen {
     world = new World(new Vector2(0, -6), true); // physics gravity
     b2dr = new Box2DDebugRenderer();
 
-    new B2WorldCreator(this);
+    creator = new B2WorldCreator(this);
 
     player = new Mario(this);
 
@@ -83,8 +87,6 @@ public class PlayScreen implements Screen {
 //      music = Main.manager.get("audio/music/mario_music.ogg", Music.class);
 //      music.setLooping(true);
 //      music.play();
-
-      goomba = new Goomba(this, .32f, .32f);
   }
 
   @Override
@@ -111,7 +113,9 @@ public class PlayScreen implements Screen {
     game.batch.setProjectionMatrix(gamecam.combined);
     game.batch.begin();
     player.draw(game.batch);
-    goomba.draw(game.batch);
+    for (Enemy enemy : creator.getGoombas()) {
+      enemy.draw(game.batch);
+    }
     game.batch.end();
 
     // draw the hud
@@ -160,7 +164,10 @@ public class PlayScreen implements Screen {
 
 
     player.update(delta);
-    goomba.update(delta);
+    for (Enemy enemy : creator.getGoombas()) {
+        enemy.update(delta);
+    }
+
     hud.update(delta);
 
     gamecam.update(); // always update cam

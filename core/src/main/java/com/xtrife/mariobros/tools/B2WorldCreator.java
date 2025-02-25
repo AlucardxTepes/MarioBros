@@ -9,15 +9,19 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.xtrife.mariobros.Main;
 import com.xtrife.mariobros.screens.PlayScreen;
 import com.xtrife.mariobros.sprites.Brick;
 import com.xtrife.mariobros.sprites.Coin;
+import com.xtrife.mariobros.sprites.Goomba;
 
 /**
  * Created by 9S on 2/24/2025 - 3:43 AM.
  */
 public class B2WorldCreator {
+
+    private Array<Goomba> goombas;
 
     private final TiledMap map;
 
@@ -68,5 +72,16 @@ public class B2WorldCreator {
 
             new Brick(screen, rectangle);
         }
+
+        // create all goombas
+        goombas = new Array<>();
+        for (MapObject object : map.getLayers().get(6).getObjects().getByType(RectangleMapObject.class)) {
+            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+            goombas.add(new Goomba(screen, rectangle.getX() / Main.PPM, rectangle.getY() / Main.PPM));
+        }
+    }
+
+    public Array<Goomba> getGoombas() {
+        return this.goombas;
     }
 }
